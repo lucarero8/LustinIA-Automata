@@ -1,0 +1,44 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "path": "twilio-survey",
+        "options": {}
+      },
+      "id": "1",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "functionCode": "const body = $json.Body;\nconst from = $json.From;\nreturn [{\n  json: {\n    session_id: from,\n    uid: 'anon',\n    channel: 'whatsapp',\n    metric: 'diagnostico',\n    answer: body,\n    ts: new Date().toISOString()\n  }\n}];"
+      },
+      "id": "2",
+      "name": "Function Parse",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [450, 300]
+    },
+    {
+      "parameters": {
+        "operation": "insert",
+        "collection": "surveys",
+        "fields": "session_id,uid,channel,metric,answer,ts"
+      },
+      "id": "3",
+      "name": "Firestore Insert",
+      "type": "n8n-nodes-base.firestore",
+      "typeVersion": 1,
+      "position": [650, 300],
+      "credentials": {
+        "firestoreApi": "YOUR_FIRESTORE_CREDENTIALS"
+      }
+    }
+  ],
+  "connections": {
+    "Webhook": { "main": [[{ "node": "Function Parse", "type": "main", "index": 0 }]] },
+    "Function Parse": { "main": [[{ "node": "Firestore Insert", "type": "main", "index": 0 }]] }
+  }
+}

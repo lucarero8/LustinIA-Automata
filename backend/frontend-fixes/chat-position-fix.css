@@ -1,0 +1,48 @@
+/* Chat sale del LADO IZQUIERDO, SOBRE TEXTO, AZUL BRILLANTE */
+#chtl-inline-bot {
+    position: fixed !important;
+    bottom: 320px !important;    /* Sobre el texto principal */
+    left: 5% !important;         /* LADO IZQUIERDO */
+    width
+
+
+[200~# 1. Crear fixes y entrar
+cd ~/Documents/LustinIA/backend
+mkdir -p frontend-fixes && cd frontend-fixes
+
+# 2. CSS para CHAT IZQUIERDO + AZUL + SOBRE TEXTO
+cat > chat-left-blue.css << 'EOF'
+#chtl-inline-bot {
+    display:none !important;
+    width:380px !important;
+    height:520px !important;
+    position:fixed !important;
+    bottom:280px !important;  /* ARRIBA del texto Lustig-IA */
+    left:6% !important;       /* LADO IZQUIERDO */
+    z-index:999 !important;
+    background:rgba(0,0,0,0.98) !important;
+    border:3px solid #00bfff !important;  /* AZUL BRILLANTE */
+    border-radius:16px !important;
+    box-shadow:0 0 50px rgba(0,191,255,0.8) !important;
+    overflow:hidden !important;
+}
+#chtl-inline-bot iframe { 
+    border-radius:14px !important; 
+    border:1px solid rgba(0,191,255,0.3) !important;
+}
+#chat-welcome {
+    position:fixed !important;
+    bottom:250px !important;
+    left:4% !important;
+    width:420px !important;
+    background:rgba(0,0,0,0.95) !important;
+    border:2px solid #00bfff !important;
+    border-radius:12px !important;
+    padding:16px !important;
+    color:#00bfff !important;
+    font-family:'Share Tech Mono', monospace !important;
+    font-size:13px !important;
+    z-index:998 !important;
+    box-shadow:0 0 30px rgba(0,191,255,0.6) !important;
+    display:none !important;
+}

@@ -1,0 +1,52 @@
+{
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "1",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "functionCode": "const phone = '+52XXXXXXXXXX';\nreturn [{\n  json: {\n    url: 'https://api.twilio.com/2010-04-01/Accounts/YOUR_SID/Messages.json',\n    sid: 'YOUR_SID',\n    token: 'YOUR_TOKEN',\n    to: `whatsapp:${phone}`,\n    from: 'whatsapp:+YOUR_TWILIO_NUMBER',\n    body: '📋 Encuesta express\\n1) ¿Cuál es tu nicho?\\nResponde: RETAIL / FITNESS / SERVICIOS / OTRO'\n  }\n}];"
+      },
+      "id": "2",
+      "name": "Function Format",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [450, 300]
+    },
+    {
+      "parameters": {
+        "authentication": "basicAuth",
+        "url": "={{$json.url}}",
+        "method": "POST",
+        "sendBody": true,
+        "jsonBody": false,
+        "options": {},
+        "bodyParameters": {
+          "To": "={{$json.to}}",
+          "From": "={{$json.from}}",
+          "Body": "={{$json.body}}"
+        }
+      },
+      "id": "3",
+      "name": "HTTP Request Twilio",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [650, 300],
+      "credentials": {
+        "httpBasicAuth": {
+          "user": "YOUR_SID",
+          "password": "YOUR_TOKEN"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Manual Trigger": { "main": [[{ "node": "Function Format", "type": "main", "index": 0 }]] },
+    "Function Format": { "main": [[{ "node": "HTTP Request Twilio", "type": "main", "index": 0 }]] }
+  }
+}

@@ -1,0 +1,68 @@
+Icarus Core
+│
+├── AnchorPoints
+│   → objetivos, metas, constraints
+│
+├── Breadcrumbs
+│   → rastro de decisiones (memoria operativa)
+│
+├── RAG
+│   → leyes, hacks, métricas, docs, TODO tu conocimiento
+│
+├── Reasoning Engine
+│   → razonamiento verbal + paralelo
+│
+├── Active Classification
+│   → lead, riesgo, intención
+│
+├── Thread Rot
+│   → limpieza de contexto muerto
+│
+├── Robust Coreference
+│   → evita confusiones semánticas
+│
+├── Guardrails (ABCD)
+│   → límites cognitivos y legales
+│
+└── Manual Refresh
+    → inyección humana controlada
+
+
+
+
+FLUJO AUTH → FIRESTORE → CLOUD RUN (CLARO)
+🔁 Flujo real de usuario
+Landing (index.html)
+   ↓
+Firebase Auth (email / WhatsApp después)
+   ↓
+Firestore:
+   users/{uid}
+   leads/{id}
+   sessions/{id}
+   ↓
+Request con JWT
+   ↓
+Cloud Run (Icarus Core)
+
+📌 Firestore (colecciones mínimas)
+users
+  └── uid
+      ├── role: "free | vip | admin"
+      ├── createdAt
+      └── flags
+
+leads
+  └── id
+      ├── name
+      ├── email
+      ├── phone
+      ├── source: "landing"
+      └── status
+
+sessions
+  └── id
+      ├── uid
+      ├── context
+      ├── breadcrumbs
+      └── updatedAt
