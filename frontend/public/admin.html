@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Lustig-IA Admin Panel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet"/>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#00ff41",
+                        textblue: "#00bfff",
+                    },
+                    fontFamily: {
+                        display: ["'Share Tech Mono'", "monospace"],
+                    }
+                }
+            }
+        };
+    </script>
+    <style>
+        body { 
+            margin:0; 
+            background:#000; 
+            min-height:100vh; 
+            font-family:'Share Tech Mono', monospace;
+            color:#00ff41;
+        }
+        .admin-card {
+            background:rgba(0,0,0,0.95);
+            border:2px solid #00ff41;
+            border-radius:8px;
+            padding:24px;
+            margin:16px 0;
+            box-shadow:0 0 30px rgba(0,255,65,0.3);
+        }
+        .btn-primary {
+            background:#00ff41;
+            color:#000;
+            border:none;
+            padding:10px 20px;
+            border-radius:6px;
+            cursor:pointer;
+            font-weight:bold;
+            transition:all 0.3s;
+        }
+        .btn-primary:hover {
+            box-shadow:0 0 20px rgba(0,255,65,0.8);
+            transform:scale(1.05);
+        }
+        .btn-danger {
+            background:#ff4444;
+            color:#fff;
+            border:none;
+            padding:8px 16px;
+            border-radius:4px;
+            cursor:pointer;
+            font-size:12px;
+        }
+        .license-item {
+            background:rgba(0,255,65,0.05);
+            border:1px solid rgba(0,255,65,0.3);
+            padding:12px;
+            margin:8px 0;
+            border-radius:4px;
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+        }
+        .status-active { color:#00ff41; }
+        .status-expired { color:#ff4444; }
+        table {
+            width:100%;
+            border-collapse:collapse;
+        }
+        th, td {
+            padding:12px;
+            text-align:left;
+            border-bottom:1px solid rgba(0,255,65,0.2);
+        }
+        th {
+            color:#00bfff;
+            font-weight:bold;
+        }
+        input, textarea {
+            width:100%;
+            padding:10px;
+            background:rgba(0,255,65,0.05);
+            border:1px solid #00ff41;
+            color:#fff;
+            border-radius:4px;
+            margin:8px 0;
+        }
+        input:focus, textarea:focus {
+            outline:none;
+            box-shadow:0 0 10px rgba(0,255,65,0.5);
+        }
+    </style>
+</head>
+<body class="p-8">
+    
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-8">
+        <div>
+            <h1 class="text-4xl font-bold text-primary mb-2">🔐 ADMIN PANEL</h1>
+            <p class="text-textblue">Lustig-IA Management System</p>
+        </div>
+        <button onclick="logout()" class="btn-danger">Cerrar Sesión</button>
+    </div>
+
+    <!-- Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+        <div class="admin-card text-center">
+            <div class="text-3xl font-bold text-primary" id="total-licenses">17</div>
+            <div class="text-sm text-textblue">Licencias Disponibles</div>
+        </div>
+        <div class="admin-card text-center">
+            <div class="text-3xl font-bold text-textblue" id="active-licenses">0</div>
+            <div class="text-sm text-textblue">Licencias Activas</div>
+        </div>
+        <div class="admin-card text-center">
+            <div class="text-3xl font-bold" style="color:#25D366;" id="whatsapp-sent">0</div>
+            <div class="text-sm text-textblue">Encuestas Enviadas</div>
+        </div>
+        <div class="admin-card text-center">
+            <div class="text-3xl font-bold" style="color:#ff9800;" id="stripe-sales">$0</div>
+            <div class="text-sm text-textblue">Ventas Stripe</div>
+        </div>
+    </div>
+
+    <!-- Team Contacts -->
+    <div class="admin-card mb-8">
+        <h2 class="text-2xl font-bold text-primary mb-4">📞 Equipo de Trabajo</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>WhatsApp</th>
+                    <th>Rol</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Evelin Recio</td>
+                    <td>+52 1 81 1066 7355</td>
+                    <td class="text-textblue">Ventas</td>
+                    <td>
+                        <button onclick="sendWhatsApp('5218110667355')" class="btn-primary text-xs py-1 px-3">Enviar</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Edgar Von</td>
+                    <td>+52 1 81 8096 7391</td>
+                    <td class="text-textblue">Ventas</td>
+                    <td>
+                        <button onclick="sendWhatsApp('5218180967391')" class="btn-primary text-xs py-1 px-3">Enviar</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Nancy</td>
+                    <td>+52 1 81 9366 7176</td>
+                    <td class="text-textblue">Soporte</td>
+                    <td>
+                        <button onclick="sendWhatsApp('5218193667176')" class="btn-primary text-xs py-1 px-3">Enviar</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="mt-4">
+            <button onclick="enviarEncuestaEquipo()" class="btn-primary w-full">
+                📊 ENVIAR ENCUESTA A TODO EL EQUIPO
+            </button>
+        </div>
+    </div>
+
+    <!-- License Management -->
+    <div class="admin-card mb-8">
+        <h2 class="text-2xl font-bold text-primary mb-4">🎫 Gestión de Licencias</h2>
+        
+        <div class="mb-4">
+            <h3 class="text-lg text-textblue mb-2">Generar Nueva Licencia</h3>
+            <input type="text" id="license-email" placeholder="Email del cliente" />
+            <input type="text" id="license-name" placeholder="Nombre del cliente" />
+            <button onclick="generateLicense()" class="btn-primary mt-2">Generar Licencia</button>
+        </div>
+
+        <h3 class="text-lg text-textblue mb-2">Licencias Activas</h3>
+        <div id="licenses-list">
+            <!-- Las licencias se cargarán aquí -->
+        </div>
+    </div>
+
+    <!-- IP Tracking -->
+    <div class="admin-card">
+        <h2 class="text-2xl font-bold text-primary mb-4">🌐 Control de IPs</h2>
+        <p class="text-sm text-textblue mb-4">Tu IP actual: <span id="current-ip" class="text-primary">Cargando...</span></p>
+        
+        <div id="ip-list">
+            <!-- Lista de IPs autorizadas -->
+        </div>
+    </div>
+
+    <script>
+        // Verificar acceso al cargar
+        window.addEventListener('load', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const token = urlParams.get('token');
+            
+            if (!token) {
+                alert('❌ Acceso denegado');
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            try {
+                const userId = atob(token);
+                const adminUsers = ['LUSTIG2025', 'ADMIN', 'VICTOR'];
+                
+                if (!adminUsers.includes(userId.toUpperCase())) {
+                    alert('❌ Token inválido');
+                    window.location.href = 'index.html';
+                }
+            } catch (e) {
+                alert('❌ Token corrupto');
+                window.location.href = 'index.html';
+            }
+            
+            loadData();
+            getUserIP();
+        });
+
+        function logout() {
+            if (confirm('¿Cerrar sesión?')) {
+                window.location.href = 'index.html';
+            }
+        }
+
+        function sendWhatsApp(numero) {
+            const mensaje = encodeURIComponent('🤖 Mensaje desde Lustig-IA Admin Panel');
+            window.open(`https://wa.me/${numero}?text=${mensaje}`, '_blank');
+        }
+
+        function enviarEncuestaEquipo() {
+            const preguntas = `🤖 *ENCUESTA LUSTIG-IA*
+
+1. ¿Cuál es tu nicho principal?
+□ Retail
+□ Gimnasio / Fitness
+□ Servicios
+□ Otro
+
+2. ¿Tu objetivo actual es principalmente...?
+□ Vender más
+□ Cobrar mejor / más rápido
+□ Retener clientes
+□ Optimizar procesos internos
+
+3. ¿Cuentas con CRM para gestionar clientes?
+□ Sí
+□ No
+
+4. ¿Cuentas con ERP u otro sistema administrativo?
+□ Sí
+□ No
+
+5. ¿Usas actualmente alguna herramienta de IA o automatización?
+□ Sí
+□ No
+
+6. ¿Quieres recibir una propuesta personalizada para tu negocio?
+□ Sí
+□ No
+
+_Enviado desde Lustig-IA Admin_`;
+
+            const mensaje = encodeURIComponent(preguntas);
+            const contactos = [
+                { nombre: 'Evelin Recio', numero: '5218110667355' },
+                { nombre: 'Edgar Von', numero: '5218180967391' },
+                { nombre: 'Nancy', numero: '5218193667176' }
+            ];
+            
+            if (confirm(`¿Enviar encuesta a ${contactos.length} contactos?`)) {
+                contactos.forEach((contacto, index) => {
+                    setTimeout(() => {
+                        window.open(`https://wa.me/${contacto.numero}?text=${mensaje}`, '_blank');
+                    }, index * 2000);
+                });
+                
+                // Actualizar contador
+                const sent = parseInt(document.getElementById('whatsapp-sent').textContent) + 3;
+                document.getElementById('whatsapp-sent').textContent = sent;
+                localStorage.setItem('whatsapp_sent', sent);
+                
+                alert('✅ Abriendo WhatsApp para cada contacto...');
+            }
+        }
+
+        function generateLicense() {
+            const email = document.getElementById('license-email').value;
+            const name = document.getElementById('license-name').value;
+            
+            if (!email || !name) {
+                alert('❌ Completa todos los campos');
+                return;
+            }
+            
+            const licenseKey = 'LIA-' + Math.random().toString(36).substr(2, 9).toUpperCase();
+            const license = {
+                key: licenseKey,
+                email: email,
+                name: name,
+                ip: document.getElementById('current-ip').textContent,
+                date: new Date().toISOString(),
+                status: 'active'
+            };
+            
+            // Guardar en localStorage (en producción usar backend)
+            const licenses = JSON.parse(localStorage.getItem('licenses') || '[]');
+            licenses.push(license);
+            localStorage.setItem('licenses', JSON.stringify(licenses));
+            
+            // Actualizar disponibles
+            const available = parseInt(document.getElementById('total-licenses').textContent) - 1;
+            document.getElementById('total-licenses').textContent = available;
+            localStorage.setItem('licenses_available', available);
+            
+            document.getElementById('license-email').value = '';
+            document.getElementById('license-name').value = '';
+            
+            loadLicenses();
+            alert(`✅ Licencia generada: ${licenseKey}`);
+        }
+
+        function loadLicenses() {
+            const licenses = JSON.parse(localStorage.getItem('licenses') || '[]');
+            const container = document.getElementById('licenses-list');
+            
+            if (licenses.length === 0) {
+                container.innerHTML = '<p class="text-textblue text-sm">No hay licencias generadas</p>';
+                return;
+            }
+            
+            container.innerHTML = licenses.map(lic => `
+                <div class="license-item">
+                    <div>
+                        <div class="font-bold">${lic.key}</div>
+                        <div class="text-sm text-textblue">${lic.name} - ${lic.email}</div>
+                        <div class="text-xs" style="color:#888;">IP: ${lic.ip} | ${new Date(lic.date).toLocaleDateString()}</div>
+                    </div>
+                    <div>
+                        <span class="status-${lic.status}">${lic.status.toUpperCase()}</span>
+                        <button onclick="revokeLicense('${lic.key}')" class="btn-danger ml-2">Revocar</button>
+                    </div>
+                </div>
+            `).join('');
+            
+            document.getElementById('active-licenses').textContent = licenses.filter(l => l.status === 'active').length;
+        }
+
+        function revokeLicense(key) {
+            if (!confirm('¿Revocar esta licencia?')) return;
+            
+            const licenses = JSON.parse(localStorage.getItem('licenses') || '[]');
+            const index = licenses.findIndex(l => l.key === key);
+            
+            if (index !== -1) {
+                licenses[index].status = 'revoked';
+                localStorage.setItem('licenses', JSON.stringify(licenses));
+                loadLicenses();
+                alert('✅ Licencia revocada');
+            }
+        }
+
+        function getUserIP() {
+            fetch('https://api.ipify.org?format=json')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('current-ip').textContent = data.ip;
+                    
+                    // Guardar IP autorizada
+                    const ips = JSON.parse(localStorage.getItem('authorized_ips') || '[]');
+                    if (!ips.includes(data.ip)) {
+                        ips.push(data.ip);
+                        localStorage.setItem('authorized_ips', JSON.stringify(ips));
+                    }
+                    
+                    loadIPs();
+                })
+                .catch(() => {
+                    document.getElementById('current-ip').textContent = 'No disponible';
+                });
+        }
+
+        function loadIPs() {
+            const ips = JSON.parse(localStorage.getItem('authorized_ips') || '[]');
+            const container = document.getElementById('ip-list');
+            
+            if (ips.length === 0) {
+                container.innerHTML = '<p class="text-textblue text-sm">No hay IPs registradas</p>';
+                return;
+            }
+            
+            container.innerHTML = '<h3 class="text-textblue mb-2">IPs Autorizadas</h3>' + 
+                ips.map(ip => `
+                    <div class="license-item">
+                        <span>${ip}</span>
+                        <button onclick="removeIP('${ip}')" class="btn-danger">Eliminar</button>
+                    </div>
+                `).join('');
+        }
+
+        function removeIP(ip) {
+            if (!confirm('¿Eliminar esta IP?')) return;
+            
+            let ips = JSON.parse(localStorage.getItem('authorized_ips') || '[]');
+            ips = ips.filter(i => i !== ip);
+            localStorage.setItem('authorized_ips', JSON.stringify(ips));
+            loadIPs();
+        }
+
+        function loadData() {
+            // Cargar estadísticas
+            const available = localStorage.getItem('licenses_available') || 17;
+            const sent = localStorage.getItem('whatsapp_sent') || 0;
+            
+            document.getElementById('total-licenses').textContent = available;
+            document.getElementById('whatsapp-sent').textContent = sent;
+            
+            loadLicenses();
+        }
+    </script>
+</body>
+</html>

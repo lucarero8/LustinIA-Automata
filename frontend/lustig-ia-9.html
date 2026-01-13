@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Lustig-IA</title>
+  <style>
+    /* Oculta el icono de chat predeterminado */
+    #chtl-open-chat-icon {
+      display: none !important;
+    }
+
+    /* Modifica la posición de tu ventana de chat */
+    #chtl-chat-iframe-container {
+      position: fixed;
+      bottom: 20px;
+      left: 20px; /* Cambiado de right a left */
+      width: 350px;
+      height: 500px;
+      z-index: 1000;
+      box-shadow: 0 0 10px rgba(0,0,0,0.5);
+      display: none; /* Oculto al cargar */
+    }
+  </style>
+</head>
+<body>
+  <!-- Nuevo botón de apertura -->
+  <div style="cursor: pointer;" onclick="toggleChat()">
+    Lustig-IA
+  </div>
+
+  <!-- Contenedor del chat (asegúrate de que el ID coincida con el real) -->
+  <div id="chtl-chat-iframe-container">
+    <!-- Aquí va tu iframe o contenido del chat -->
+  </div>
+
+  <script>
+    function toggleChat() {
+      var chatContainer = document.getElementById('chtl-chat-iframe-container');
+      if (chatContainer.style.display === "none" || chatContainer.style.display === "") {
+        chatContainer.style.display = "block";
+      } else {
+        chatContainer.style.display = "none";
+      }
+    }
+  </script>
+</body>
+</html>

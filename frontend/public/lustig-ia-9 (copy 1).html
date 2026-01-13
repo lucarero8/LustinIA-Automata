@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Αυτόματα Lustig-IA</title>
+    <title>Autómata Lustig-IA</title>
     <meta name="description" content="Automatización de gestión de cartera con IA avanzada. Por Victor Lustig."/>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Inter:wght@200;300;400&display=swap" rel="stylesheet"/>
@@ -39,6 +39,7 @@
         @keyframes rotateSphere { from{transform:rotateY(0) rotateX(0);} to{transform:rotateY(360deg) rotateX(360deg);} }
         .glitch-hover:hover { animation:glitch 0.3s infinite; color:#00ff41; }
         @keyframes glitch { 0%{transform:translate(0)} 20%{transform:translate(-3px,3px)} 40%{transform:translate(3px,-3px)} 60%{transform:translate(-3px,3px)} 80%{transform:translate(3px,-3px)} 100%{transform:translate(0)} }
+        
         #chtl-inline-bot {
             display:none;
             width:380px;
@@ -53,53 +54,156 @@
             box-shadow:0 0 30px rgba(0,255,65,0.5);
             overflow:hidden;
         }
-        #chtl-inline-bot iframe {
+        
+        /* FORZAR que el chat de Chatling esté dentro del contenedor */
+        #chtl-inline-bot iframe,
+        #chtl-inline-bot > div {
             width:100% !important;
             height:100% !important;
-            border:none;
+            border:none !important;
+            position:relative !important;
+            max-width:100% !important;
+            max-height:100% !important;
         }
-        #icarus-menu { display:none; position:fixed; top:60px; right:16px; background:rgba(0,0,0,0.95); border:2px solid #00ff41; border-radius:8px; padding:16px; z-index:1000; box-shadow:0 0 30px rgba(0,255,65,0.5); min-width:320px; max-height:80vh; overflow-y:auto; }
-        #icarus-menu h3 { color:#00ff41; font-size:12px; margin:16px 0 8px 0; text-transform:uppercase; letter-spacing:2px; opacity:0.7; border-bottom:1px solid rgba(0,255,65,0.3); padding-bottom:4px; }
+        
+        /* Ocultar el widget flotante original de Chatling */
+        #chtl-widget-container,
+        [id*="chtl"][id*="widget"]:not(#chtl-inline-bot) {
+            display:none !important;
+        }
+        
+        #icarus-menu { 
+            display:none; 
+            position:fixed; 
+            top:60px; 
+            right:16px; 
+            background:rgba(0,0,0,0.95); 
+            border:2px solid #00ff41; 
+            border-radius:8px; 
+            padding:16px; 
+            z-index:1000; 
+            box-shadow:0 0 30px rgba(0,255,65,0.5); 
+            min-width:320px; 
+            max-height:80vh; 
+            overflow-y:auto; 
+        }
+        #icarus-menu h3 { 
+            color:#00ff41; 
+            font-size:12px; 
+            margin:16px 0 8px 0; 
+            text-transform:uppercase; 
+            letter-spacing:2px; 
+            opacity:0.7; 
+            border-bottom:1px solid rgba(0,255,65,0.3); 
+            padding-bottom:4px; 
+        }
         #icarus-menu h3:first-child { margin-top:0; }
         #icarus-menu ul { list-style:none; margin:0; padding:0; }
-        #icarus-menu li { padding:8px 14px; border-bottom:1px solid rgba(0,255,65,0.1); cursor:pointer; transition:all 0.3s; font-size:13px; }
+        #icarus-menu li { 
+            padding:8px 14px; 
+            border-bottom:1px solid rgba(0,255,65,0.1); 
+            cursor:pointer; 
+            transition:all 0.3s; 
+            font-size:13px; 
+        }
         #icarus-menu li:hover { background:rgba(0,255,65,0.15); color:#00ff41; }
         #icarus-menu li:last-child { border-bottom:none; }
         #icarus-menu li.status-done { color:#00ff41; }
         #icarus-menu li.status-done::before { content:"✓ "; }
         #icarus-menu li.status-progress::before { content:"⏳ "; color:#00bfff; }
         #icarus-menu li.status-planned::before { content:"○ "; opacity:0.5; }
-        .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.9); z-index:2000; align-items:center; justify-content:center; }
-        .modal-content { background:#000; border:2px solid #00ff41; border-radius:8px; padding:32px; max-width:420px; width:92%; box-shadow:0 0 50px rgba(0,255,65,0.8); position:relative; }
-        .modal-close { position:absolute; top:12px; right:16px; font-size:32px; cursor:pointer; color:#00ff41; transition:all 0.3s; }
+        
+        .modal-overlay { 
+            display:none; 
+            position:fixed; 
+            inset:0; 
+            background:rgba(0,0,0,0.9); 
+            z-index:2000; 
+            align-items:center; 
+            justify-content:center; 
+        }
+        .modal-content { 
+            background:#000; 
+            border:2px solid #00ff41; 
+            border-radius:8px; 
+            padding:32px; 
+            max-width:420px; 
+            width:92%; 
+            box-shadow:0 0 50px rgba(0,255,65,0.8); 
+            position:relative; 
+        }
+        .modal-close { 
+            position:absolute; 
+            top:12px; 
+            right:16px; 
+            font-size:32px; 
+            cursor:pointer; 
+            color:#00ff41; 
+            transition:all 0.3s; 
+        }
         .modal-close:hover { transform:scale(1.2); }
-        .form-input { width:100%; padding:12px; margin:12px 0; background:rgba(0,255,65,0.05); border:1px solid #00ff41; border-radius:4px; color:#fff; font-family:'Share Tech Mono', monospace; }
+        .form-input { 
+            width:100%; 
+            padding:12px; 
+            margin:12px 0; 
+            background:rgba(0,255,65,0.05); 
+            border:1px solid #00ff41; 
+            border-radius:4px; 
+            color:#fff; 
+            font-family:'Share Tech Mono', monospace; 
+        }
         .form-input:focus { outline:none; box-shadow:0 0 10px rgba(0,255,65,0.5); }
-        .form-button { width:100%; padding:14px; margin-top:20px; background:#00ff41; color:#000; border:none; border-radius:4px; font-family:'Share Tech Mono', monospace; font-weight:bold; cursor:pointer; transition:all 0.3s; }
+        .form-button { 
+            width:100%; 
+            padding:14px; 
+            margin-top:20px; 
+            background:#00ff41; 
+            color:#000; 
+            border:none; 
+            border-radius:4px; 
+            font-family:'Share Tech Mono', monospace; 
+            font-weight:bold; 
+            cursor:pointer; 
+            transition:all 0.3s; 
+        }
         .form-button:hover { box-shadow:0 0 20px rgba(0,255,65,0.9); transform:scale(1.02); }
+        
         .whatsapp-float { position:fixed; bottom:90px; right:16px; z-index:999; }
-        .whatsapp-float a { display:flex; align-items:center; gap:8px; background:#25D366; color:#fff; padding:12px 20px; border-radius:50px; text-decoration:none; font-family:'Share Tech Mono', monospace; font-size:14px; box-shadow:0 4px 15px rgba(37,211,102,0.4); transition:all 0.3s; }
+        .whatsapp-float a { 
+            display:flex; 
+            align-items:center; 
+            gap:8px; 
+            background:#25D366; 
+            color:#fff; 
+            padding:12px 20px; 
+            border-radius:50px; 
+            text-decoration:none; 
+            font-family:'Share Tech Mono', monospace; 
+            font-size:14px; 
+            box-shadow:0 4px 15px rgba(37,211,102,0.4); 
+            transition:all 0.3s; 
+        }
         .whatsapp-float a:hover { transform:scale(1.05); box-shadow:0 6px 20px rgba(37,211,102,0.6); }
     </style>
 </head>
 <body class="relative flex items-center justify-center h-screen w-screen text-white font-display">
-    <!-- Logo L-IA superior izquierda -->
+    
+    <!-- Logo Lustig superior izquierda -->
     <div class="absolute top-8 left-8 z-30 flex items-center gap-3">
         <div class="w-14 h-14 rounded-full bg-primary/20 flex items-center justify-center border border-primary/50 shadow-[0_0_15px_rgba(0,255,65,0.6)]">
             <span class="text-xl font-bold text-primary">Lustig</span>
         </div>
     </div>
 
-    <!-- Icarus-IA Pre-Venta superior derecha -->
+    <!-- IcarusIA Pre-Venta superior derecha -->
     <div class="absolute top-8 right-8 z-30 opacity-90 text-sm tracking-widest text-primary cursor-pointer hover:opacity-100 transition" onclick="toggleIcarusMenu()">
         IcarusIA <span class="text-[10px] opacity-70">PRE-VENTA</span> <span class="text-xs bg-primary/30 px-2 py-1 rounded-full">-30%</span>
     </div>
 
-    <!-- Menú desplegable IcarusIA - CORREGIDO Y COMPLETADO -->
+    <!-- Menú desplegable IcarusIA -->
     <div id="icarus-menu">
         <h3>🚀 En Desarrollo</h3>
         <ul class="text-sm text-white">
-            <!-- Core AI Engine -->
             <li class="status-done">Anchor Points</li>
             <li class="status-done">Verbal Reasoning Engine</li>
             <li class="status-done">Self-Refinement Loop</li>
@@ -140,7 +244,7 @@
 
         <div style="margin-top:16px; padding-top:12px; border-top:1px solid rgba(0,255,65,0.3);">
             <button onclick="openPreVentaStripe()" class="form-button" style="margin:0; padding:10px;">
-                RESERVAR AHORA (-30%) 18 Licencias Restantes
+                RESERVAR AHORA (-30%) 17 Licencias Restantes
             </button>
         </div>
     </div>
@@ -151,7 +255,7 @@
         <div class="point-cloud w-0 h-0 relative" id="pointCloud"></div>
         <h1 class="absolute z-10 text-center pointer-events-none">
             <span class="block text-5xl md:text-7xl tracking-[0.4em] text-textblue drop-shadow-[0_0_20px_rgba(0,191,255,0.9)]">
-                Αυτόματα Lustig-IA
+                Αὐτόματα Lustig-IA
             </span>
             <span class="block text-xl md:text-2xl mt-4 tracking-widest text-primary opacity-90">
                 Analista de Ventas y Cuentas por Cobrar
@@ -213,16 +317,6 @@
         </div>
     </div>
 
-    <!-- Scripts de Chatling -->
-    <script>
-        window.chtlConfig = {
-            chatbotId: "7825123996",
-            display: "inline",
-            target: "chtl-inline-bot"
-        };
-    </script>
-    <script async data-id="7825123996" id="chtl-script" type="text/javascript" src="https://chatling.ai/js/embed.js"></script>
-
     <!-- Stripe.js -->
     <script src="https://js.stripe.com/v3/"></script>
 
@@ -245,6 +339,7 @@
 
         function openPreVentaStripe() {
             document.getElementById('preventa-modal').style.display = 'flex';
+            document.getElementById('icarus-menu').style.display = 'none';
         }
 
         function closePreVentaModal() {
@@ -269,7 +364,6 @@
                 fecha: new Date().toISOString()
             };
             console.log('Datos de Contacto:', data);
-            // TODO: Enviar a Firebase/backend
             alert('¡Gracias por contactarnos! Te responderemos pronto.');
             closeContactoForm();
             event.target.reset();
@@ -277,7 +371,20 @@
 
         function openChatWidget() {
             const chatDiv = document.getElementById('chtl-inline-bot');
-            if (chatDiv) chatDiv.style.display = 'block';
+            if (chatDiv) {
+                chatDiv.style.display = 'block';
+                
+                // Buscar todos los elementos relacionados con Chatling y moverlos
+                setTimeout(function() {
+                    const allChatElements = document.querySelectorAll('iframe[src*="chatling"], [id*="chtl"]:not(#chtl-inline-bot):not(#chtl-script)');
+                    allChatElements.forEach(function(element) {
+                        if (element.parentElement !== chatDiv && element.id !== 'chtl-script') {
+                            chatDiv.appendChild(element);
+                            element.style.cssText = 'width:100%!important;height:100%!important;display:block!important;position:relative!important;border:none!important;';
+                        }
+                    });
+                }, 1000);
+            }
         }
 
         // Cerrar menú al clic fuera
@@ -307,7 +414,31 @@
             point.style.opacity = Math.random() * 0.8 + 0.4;
             pointCloud.appendChild(point);
         }
+
+        // Mover el chat de Chatling al contenedor correcto cuando cargue
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                const targetContainer = document.getElementById('chtl-inline-bot');
+                const chatElements = document.querySelectorAll('iframe[src*="chatling"], [id*="chtl"][id*="widget"]');
+                
+                chatElements.forEach(function(element) {
+                    if (element.id !== 'chtl-script' && element.id !== 'chtl-inline-bot') {
+                        console.log('Moviendo elemento de chat:', element);
+                        targetContainer.appendChild(element);
+                        element.style.cssText = 'width:100%!important;height:100%!important;display:block!important;position:relative!important;border:none!important;';
+                    }
+                });
+            }, 2000);
+        });
     </script>
+
+    <!-- Scripts de Chatling - AL FINAL para que cargue después -->
+    <script>
+        window.chtlConfig = {
+            chatbotId: "7825123996"
+        };
+    </script>
+    <script async data-id="7825123996" id="chtl-script" type="text/javascript" src="https://chatling.ai/js/embed.js"></script>
 
     <!-- Botones inferiores -->
     <div class="fixed bottom-12 left-8 right-8 flex justify-between items-center z-50 pointer-events-none">
