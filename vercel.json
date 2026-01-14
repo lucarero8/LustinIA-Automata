@@ -1,8 +1,8 @@
 {
   "builds": [
-    { "src": "frontend/public/index.html", "use": "@vercel/static" }
+    { "src": "ICARUSIAV2/frontend/public/index.html", "use": "@vercel/static" }
   ],
   "routes": [
-    { "src": "/(.*)", "dest": "frontend/public/$1" }
+    { "src": "/(.*)", "dest": "ICARUSIAV2/frontend/public/$1" }
   ]
 }

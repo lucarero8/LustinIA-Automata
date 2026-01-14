@@ -1,6 +1,6 @@
 {
   "hosting": {
-    "public": "frontend/public",
+    "public": "ICARUSIAV2/frontend/public",
     "ignore": [
       "firebase.json",
       "**/.*",
