@@ -3,10 +3,9 @@
 <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Autómata Lustig-IA</title>
-    <meta name="description" content="Automatización de gestión de cartera con IA avanzada. Por Victor Lustig."/>
+    <title>Lustig-IA Admin Panel</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Inter:wght@200;300;400&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet"/>
     <script>
         tailwind.config = {
             theme: {
@@ -23,435 +22,524 @@
         };
     </script>
     <style>
-        body { margin:0; overflow:hidden; background:#000; height:100vh; }
-        .energy-core {
-            position: absolute;
-            width: 200px;
-            height: 200px;
-            border-radius: 50%;
-            background: radial-gradient(circle, rgba(0,255,65,1) 0%, rgba(0,255,65,0.6) 25%, rgba(0,255,65,0.25) 45%, rgba(0,255,65,0.05) 65%, transparent 70%);
-            box-shadow: 0 0 40px rgba(0,255,65,0.9), 0 0 90px rgba(0,255,65,0.6);
-            animation: pulseCore 4s ease-in-out infinite;
+        body { 
+            margin:0; 
+            background:#000; 
+            min-height:100vh; 
+            font-family:'Share Tech Mono', monospace;
+            color:#00ff41;
         }
-        @keyframes pulseCore { 0%,100% { transform:scale(1); } 50% { transform:scale(1.08); } }
-        .point { position:absolute; background:#00ff41; border-radius:50%; box-shadow:0 0 10px #00ff41; }
-        .point-cloud { animation:rotateSphere 40s linear infinite; transform-style:preserve-3d; }
-        @keyframes rotateSphere { from{transform:rotateY(0) rotateX(0);} to{transform:rotateY(360deg) rotateX(360deg);} }
-        .glitch-hover:hover { animation:glitch 0.3s infinite; color:#00ff41; }
-        @keyframes glitch { 0%{transform:translate(0)} 20%{transform:translate(-3px,3px)} 40%{transform:translate(3px,-3px)} 60%{transform:translate(-3px,3px)} 80%{transform:translate(3px,-3px)} 100%{transform:translate(0)} }
-        
-        #chtl-inline-bot {
-            display:none;
-            width:380px;
-            height:520px;
-            position:fixed;
-            bottom:90px;
-            left:16px;
-            z-index:1000;
+        .admin-card {
             background:rgba(0,0,0,0.95);
             border:2px solid #00ff41;
             border-radius:8px;
-            box-shadow:0 0 30px rgba(0,255,65,0.5);
-            overflow:hidden;
+            padding:24px;
+            margin:16px 0;
+            box-shadow:0 0 30px rgba(0,255,65,0.3);
         }
-        
-        /* FORZAR que el chat de Chatling esté dentro del contenedor */
-        #chtl-inline-bot iframe,
-        #chtl-inline-bot > div {
-            width:100% !important;
-            height:100% !important;
-            border:none !important;
-            position:relative !important;
-            max-width:100% !important;
-            max-height:100% !important;
+        .btn-primary {
+            background:#00ff41;
+            color:#000;
+            border:none;
+            padding:10px 20px;
+            border-radius:6px;
+            cursor:pointer;
+            font-weight:bold;
+            transition:all 0.3s;
         }
-        
-        /* Ocultar el widget flotante original de Chatling */
-        #chtl-widget-container,
-        [id*="chtl"][id*="widget"]:not(#chtl-inline-bot) {
-            display:none !important;
+        .btn-primary:hover {
+            box-shadow:0 0 20px rgba(0,255,65,0.8);
+            transform:scale(1.05);
         }
-        
-        #icarus-menu { 
-            display:none; 
-            position:fixed; 
-            top:60px; 
-            right:16px; 
-            background:rgba(0,0,0,0.95); 
-            border:2px solid #00ff41; 
-            border-radius:8px; 
-            padding:16px; 
-            z-index:1000; 
-            box-shadow:0 0 30px rgba(0,255,65,0.5); 
-            min-width:320px; 
-            max-height:80vh; 
-            overflow-y:auto; 
+        .btn-danger {
+            background:#ff4444;
+            color:#fff;
+            border:none;
+            padding:8px 16px;
+            border-radius:4px;
+            cursor:pointer;
+            font-size:12px;
         }
-        #icarus-menu h3 { 
-            color:#00ff41; 
-            font-size:12px; 
-            margin:16px 0 8px 0; 
-            text-transform:uppercase; 
-            letter-spacing:2px; 
-            opacity:0.7; 
-            border-bottom:1px solid rgba(0,255,65,0.3); 
-            padding-bottom:4px; 
+        .license-item {
+            background:rgba(0,255,65,0.05);
+            border:1px solid rgba(0,255,65,0.3);
+            padding:12px;
+            margin:8px 0;
+            border-radius:4px;
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
         }
-        #icarus-menu h3:first-child { margin-top:0; }
-        #icarus-menu ul { list-style:none; margin:0; padding:0; }
-        #icarus-menu li { 
-            padding:8px 14px; 
-            border-bottom:1px solid rgba(0,255,65,0.1); 
-            cursor:pointer; 
-            transition:all 0.3s; 
-            font-size:13px; 
+        .status-active { color:#00ff41; }
+        .status-expired { color:#ff4444; }
+        .status-revoked { color:#ff4444; }
+        table {
+            width:100%;
+            border-collapse:collapse;
         }
-        #icarus-menu li:hover { background:rgba(0,255,65,0.15); color:#00ff41; }
-        #icarus-menu li:last-child { border-bottom:none; }
-        #icarus-menu li.status-done { color:#00ff41; }
-        #icarus-menu li.status-done::before { content:"✓ "; }
-        #icarus-menu li.status-progress::before { content:"⏳ "; color:#00bfff; }
-        #icarus-menu li.status-planned::before { content:"○ "; opacity:0.5; }
-        
-        .modal-overlay { 
-            display:none; 
-            position:fixed; 
-            inset:0; 
-            background:rgba(0,0,0,0.9); 
-            z-index:2000; 
-            align-items:center; 
-            justify-content:center; 
+        th, td {
+            padding:12px;
+            text-align:left;
+            border-bottom:1px solid rgba(0,255,65,0.2);
         }
-        .modal-content { 
-            background:#000; 
-            border:2px solid #00ff41; 
-            border-radius:8px; 
-            padding:32px; 
-            max-width:420px; 
-            width:92%; 
-            box-shadow:0 0 50px rgba(0,255,65,0.8); 
-            position:relative; 
+        th {
+            color:#00bfff;
+            font-weight:bold;
         }
-        .modal-close { 
-            position:absolute; 
-            top:12px; 
-            right:16px; 
-            font-size:32px; 
-            cursor:pointer; 
-            color:#00ff41; 
-            transition:all 0.3s; 
+        input, textarea {
+            width:100%;
+            padding:10px;
+            background:rgba(0,255,65,0.05);
+            border:1px solid #00ff41;
+            color:#fff;
+            border-radius:4px;
+            margin:8px 0;
+            font-family:'Share Tech Mono', monospace;
         }
-        .modal-close:hover { transform:scale(1.2); }
-        .form-input { 
-            width:100%; 
-            padding:12px; 
-            margin:12px 0; 
-            background:rgba(0,255,65,0.05); 
-            border:1px solid #00ff41; 
-            border-radius:4px; 
-            color:#fff; 
-            font-family:'Share Tech Mono', monospace; 
+        input:focus, textarea:focus {
+            outline:none;
+            box-shadow:0 0 10px rgba(0,255,65,0.5);
         }
-        .form-input:focus { outline:none; box-shadow:0 0 10px rgba(0,255,65,0.5); }
-        .form-button { 
-            width:100%; 
-            padding:14px; 
-            margin-top:20px; 
-            background:#00ff41; 
-            color:#000; 
-            border:none; 
-            border-radius:4px; 
-            font-family:'Share Tech Mono', monospace; 
-            font-weight:bold; 
-            cursor:pointer; 
-            transition:all 0.3s; 
-        }
-        .form-button:hover { box-shadow:0 0 20px rgba(0,255,65,0.9); transform:scale(1.02); }
-        
-        .whatsapp-float { position:fixed; bottom:90px; right:16px; z-index:999; }
-        .whatsapp-float a { 
-            display:flex; 
-            align-items:center; 
-            gap:8px; 
-            background:#25D366; 
-            color:#fff; 
-            padding:12px 20px; 
-            border-radius:50px; 
-            text-decoration:none; 
-            font-family:'Share Tech Mono', monospace; 
-            font-size:14px; 
-            box-shadow:0 4px 15px rgba(37,211,102,0.4); 
-            transition:all 0.3s; 
-        }
-        .whatsapp-float a:hover { transform:scale(1.05); box-shadow:0 6px 20px rgba(37,211,102,0.6); }
     </style>
 </head>
-<body class="relative flex items-center justify-center h-screen w-screen text-white font-display">
+<body class="p-8">
     
-    <!-- Logo Lustig superior izquierda -->
-    <div class="absolute top-8 left-8 z-30 flex items-center gap-3">
-        <div class="w-14 h-14 rounded-full bg-primary/20 flex items-center justify-center border border-primary/50 shadow-[0_0_15px_rgba(0,255,65,0.6)]">
-            <span class="text-xl font-bold text-primary">Lustig</span>
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-8">
+        <div>
+            <h1 class="text-4xl font-bold text-primary mb-2">🔐 ADMIN PANEL</h1>
+            <p class="text-textblue">Lustig-IA Management System</p>
+        </div>
+        <button onclick="logout()" class="btn-danger">Cerrar Sesión</button>
+    </div>
+
+    <!-- Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+        <div class="admin-card text-center">
+            <div class="text-3xl font-bold text-primary" id="total-licenses">17</div>
+            <div class="text-sm text-textblue">Licencias Disponibles</div>
+        </div>
+        <div class="admin-card text-center">
+            <div class="text-3xl font-bold text-textblue" id="active-licenses">0</div>
+            <div class="text-sm text-textblue">Licencias Activas</div>
+        </div>
+        <div class="admin-card text-center">
+            <div class="text-3xl font-bold" style="color:#25D366;" id="whatsapp-sent">0</div>
+            <div class="text-sm text-textblue">Encuestas Enviadas</div>
+        </div>
+        <div class="admin-card text-center">
+            <div class="text-3xl font-bold" style="color:#ff9800;" id="stripe-sales">$0</div>
+            <div class="text-sm text-textblue">Ventas Stripe</div>
         </div>
     </div>
 
-    <!-- IcarusIA Pre-Venta superior derecha -->
-    <div class="absolute top-8 right-8 z-30 opacity-90 text-sm tracking-widest text-primary cursor-pointer hover:opacity-100 transition" onclick="toggleIcarusMenu()">
-        IcarusIA <span class="text-[10px] opacity-70">PRE-VENTA</span> <span class="text-xs bg-primary/30 px-2 py-1 rounded-full">-30%</span>
-    </div>
-
-    <!-- Menú desplegable IcarusIA -->
-    <div id="icarus-menu">
-        <h3>🚀 En Desarrollo</h3>
-        <ul class="text-sm text-white">
-            <li class="status-done">Anchor Points</li>
-            <li class="status-done">Verbal Reasoning Engine</li>
-            <li class="status-done">Self-Refinement Loop</li>
-            <li class="status-done">Cognitive Guardrails (ABCD)</li>
-            <li class="status-progress">Parallel Decoding</li>
-            <li class="status-progress">Robust Coreference</li>
-            <li class="status-planned">Thread Rot Prevention</li>
-            <li class="status-planned">Active Classification</li>
-        </ul>
-
-        <h3>🧠 Knowledge System</h3>
-        <ul class="text-sm text-white">
-            <li class="status-progress">Inner Thoughts Processing</li>
-            <li class="status-progress">Breadcrumbs Navigation</li>
-            <li class="status-planned">Knowledge Graph Integration</li>
-            <li class="status-planned">Memory Management System</li>
-            <li class="status-planned">Manual Refresh System</li>
-        </ul>
-
-        <h3>📞 Sales Agent (IcarusIA)</h3>
-        <ul class="text-sm text-white">
-            <li class="status-progress">Voice Synthesis (TTS)</li>
-            <li class="status-progress">Speech Recognition (STT)</li>
-            <li class="status-progress">Twilio Webhook Handler</li>
-            <li class="status-progress">WhatsApp Business API</li>
-            <li class="status-planned">Sales Script Engine</li>
-            <li class="status-planned">Objection Handling AI</li>
-        </ul>
-
-        <h3>🏢 Enterprise</h3>
-        <ul class="text-sm text-white">
-            <li class="status-planned">CRM / ERP Integration</li>
-            <li class="status-planned">WAIS Tests Framework</li>
-            <li class="status-planned">Multi-Agent Orchestration</li>
-            <li class="status-planned">Real-time Analytics Dashboard</li>
-            <li class="status-planned">Feedback Learning Loop</li>
-        </ul>
-
-        <div style="margin-top:16px; padding-top:12px; border-top:1px solid rgba(0,255,65,0.3);">
-            <button onclick="openPreVentaStripe()" class="form-button" style="margin:0; padding:10px;">
-                RESERVAR AHORA (-30%) 17 Licencias Restantes
+    <!-- Team Contacts -->
+    <div class="admin-card mb-8">
+        <h2 class="text-2xl font-bold text-primary mb-4">📞 Equipo de Trabajo</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>WhatsApp</th>
+                    <th>Rol</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Evelin Recio</td>
+                    <td>+52 1 81 1066 7355</td>
+                    <td class="text-textblue">Ventas</td>
+                    <td>
+                        <button onclick="sendWhatsApp('5218110667355')" class="btn-primary text-xs py-1 px-3">Enviar</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Edgar Von</td>
+                    <td>+52 1 81 8096 7391</td>
+                    <td class="text-textblue">Ventas</td>
+                    <td>
+                        <button onclick="sendWhatsApp('5218180967391')" class="btn-primary text-xs py-1 px-3">Enviar</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Nancy</td>
+                    <td>+52 1 81 9366 7176</td>
+                    <td class="text-textblue">Soporte</td>
+                    <td>
+                        <button onclick="sendWhatsApp('5218193667176')" class="btn-primary text-xs py-1 px-3">Enviar</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="mt-4">
+            <button onclick="enviarEncuestaEquipo()" class="btn-primary w-full">
+                📊 ENVIAR ENCUESTA A TODO EL EQUIPO
             </button>
         </div>
     </div>
 
-    <!-- Esfera central con núcleo pulsante -->
-    <div class="relative w-full h-full max-w-5xl max-h-screen flex items-center justify-center pointer-events-none">
-        <div class="energy-core"></div>
-        <div class="point-cloud w-0 h-0 relative" id="pointCloud"></div>
-        <h1 class="absolute z-10 text-center pointer-events-none">
-            <span class="block text-5xl md:text-7xl tracking-[0.4em] text-textblue drop-shadow-[0_0_20px_rgba(0,191,255,0.9)]">
-                Αὐτόματα Lustig-IA
-            </span>
-            <span class="block text-xl md:text-2xl mt-4 tracking-widest text-primary opacity-90">
-                Analista de Ventas y Cuentas por Cobrar
-            </span>
-        </h1>
-    </div>
+    <!-- License Management -->
+    <div class="admin-card mb-8">
+        <h2 class="text-2xl font-bold text-primary mb-4">🎫 Gestión de Licencias</h2>
+        
+        <div class="mb-4">
+            <h3 class="text-lg text-textblue mb-2">Generar Nueva Licencia</h3>
+            <input type="text" id="license-email" placeholder="Email del cliente" />
+            <input type="text" id="license-name" placeholder="Nombre del cliente" />
+            <button onclick="generateLicense()" class="btn-primary mt-2">Generar Licencia</button>
+        </div>
 
-    <!-- Contenedor del chat inline -->
-    <div id="chtl-inline-bot"></div>
-
-    <!-- Botón flotante WhatsApp -->
-    <div class="whatsapp-float">
-        <a href="https://wa.me/528130929276?text=Hola%20Lustig-IA%2C%20quiero%20información" target="_blank">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-            </svg>
-            WhatsApp
-        </a>
-    </div>
-
-    <!-- Modal formulario Contacto -->
-    <div id="contacto-modal" class="modal-overlay" onclick="closeModalOnOverlay(event, 'contacto-modal')">
-        <div class="modal-content">
-            <span class="modal-close" onclick="closeContactoForm()">&times;</span>
-            <h2 class="text-2xl text-primary text-center mb-6 tracking-widest">Contacto</h2>
-            <form id="contacto-form" onsubmit="handleContactoSubmit(event)">
-                <input type="text" name="nombre" placeholder="NOMBRE COMPLETO" class="form-input" required />
-                <input type="email" name="email" placeholder="EMAIL" class="form-input" required />
-                <input type="tel" name="telefono" placeholder="TELÉFONO" class="form-input" required />
-                <textarea name="mensaje" placeholder="MENSAJE (OPCIONAL)" class="form-input" rows="3"></textarea>
-                <button type="submit" class="form-button">ENVIAR</button>
-            </form>
-            <p class="text-center text-xs text-primary/70 mt-4">Te contactaremos a la brevedad</p>
+        <h3 class="text-lg text-textblue mb-2 mt-6">Licencias Activas</h3>
+        <div id="licenses-list">
+            <p class="text-textblue text-sm">Cargando licencias...</p>
         </div>
     </div>
 
-    <!-- Modal Pre-Venta IcarusIA -->
-    <div id="preventa-modal" class="modal-overlay" onclick="closeModalOnOverlay(event, 'preventa-modal')">
-        <div class="modal-content">
-            <span class="modal-close" onclick="closePreVentaModal()">&times;</span>
-            <h2 class="text-2xl text-primary text-center mb-4 tracking-widest">PRE-VENTA ICARUSIA</h2>
-            <p class="text-center text-primary/80 mb-2">Agente de Ventas con IA</p>
-            <p class="text-center text-3xl text-primary mb-4">$480 MXN <span class="text-sm line-through opacity-50">$686</span></p>
-            <ul class="text-sm text-primary/70 mb-6 space-y-2">
-                <li>✓ Llamadas automatizadas</li>
-                <li>✓ WhatsApp Business integrado</li>
-                <li>✓ Manejo de objeciones con IA</li>
-                <li>✓ Dashboard de métricas</li>
-                <li>✓ Soporte prioritario</li>
-            </ul>
-            <div id="stripe-checkout" class="text-center">
-                <a href="https://buy.stripe.com/4gMfZh8FY2jqd9GfxmbQY00" target="_blank" class="form-button inline-block text-lg py-4 text-center no-underline">
-                    COMPRAR AHORA (-30%)
-                </a>
-                <p class="text-xs text-primary/60 mt-6">
-                    Pago seguro vía Stripe • Acceso inmediato
-                </p>
-            </div>
+    <!-- IP Tracking -->
+    <div class="admin-card">
+        <h2 class="text-2xl font-bold text-primary mb-4">🌐 Control de IPs</h2>
+        <p class="text-sm text-textblue mb-4">Tu IP actual: <span id="current-ip" class="text-primary">Cargando...</span></p>
+        
+        <div id="ip-list">
+            <p class="text-textblue text-sm">Cargando IPs...</p>
         </div>
     </div>
 
-    <!-- Stripe.js -->
-    <script src="https://js.stripe.com/v3/"></script>
+    <!-- Firebase Config -->
+    <script type="module">
+        // Importar Firebase
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getFirestore, collection, getDocs, addDoc, updateDoc, doc, query, where } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 
-    <!-- Funciones JavaScript -->
-    <script>
-        const stripe = Stripe('pk_test_51RoVJZDXgX8h2eEZPHB1jPbl4sRF44Rx17gRBNF6KEbwfvkmSPMem4hGGqyqLpjihv2Epm8G8OKPTaMhTDT4eTGj00LygWLDGh');
-
-        function toggleIcarusMenu() {
-            const menu = document.getElementById('icarus-menu');
-            menu.style.display = menu.style.display === 'none' || menu.style.display === '' ? 'block' : 'none';
-        }
-
-        function openContactoForm() {
-            document.getElementById('contacto-modal').style.display = 'flex';
-        }
-
-        function closeContactoForm() {
-            document.getElementById('contacto-modal').style.display = 'none';
-        }
-
-        function openPreVentaStripe() {
-            document.getElementById('preventa-modal').style.display = 'flex';
-            document.getElementById('icarus-menu').style.display = 'none';
-        }
-
-        function closePreVentaModal() {
-            document.getElementById('preventa-modal').style.display = 'none';
-        }
-
-        function closeModalOnOverlay(event, modalId) {
-            if (event.target.classList.contains('modal-overlay')) {
-                if (modalId === 'preventa-modal') closePreVentaModal();
-                else closeContactoForm();
-            }
-        }
-
-        function handleContactoSubmit(event) {
-            event.preventDefault();
-            const formData = new FormData(event.target);
-            const data = {
-                nombre: formData.get('nombre'),
-                email: formData.get('email'),
-                telefono: formData.get('telefono'),
-                mensaje: formData.get('mensaje'),
-                fecha: new Date().toISOString()
-            };
-            console.log('Datos de Contacto:', data);
-            alert('¡Gracias por contactarnos! Te responderemos pronto.');
-            closeContactoForm();
-            event.target.reset();
-        }
-
-        function openChatWidget() {
-            const chatDiv = document.getElementById('chtl-inline-bot');
-            if (chatDiv) {
-                chatDiv.style.display = 'block';
-                
-                // Buscar todos los elementos relacionados con Chatling y moverlos
-                setTimeout(function() {
-                    const allChatElements = document.querySelectorAll('iframe[src*="chatling"], [id*="chtl"]:not(#chtl-inline-bot):not(#chtl-script)');
-                    allChatElements.forEach(function(element) {
-                        if (element.parentElement !== chatDiv && element.id !== 'chtl-script') {
-                            chatDiv.appendChild(element);
-                            element.style.cssText = 'width:100%!important;height:100%!important;display:block!important;position:relative!important;border:none!important;';
-                        }
-                    });
-                }, 1000);
-            }
-        }
-
-        // Cerrar menú al clic fuera
-        document.addEventListener('click', function(event) {
-            const menu = document.getElementById('icarus-menu');
-            const trigger = event.target.closest('[onclick="toggleIcarusMenu()"]');
-            if (!trigger && !menu.contains(event.target)) {
-                menu.style.display = 'none';
-            }
-        });
-
-        // Generación de la esfera de puntos
-        const pointCloud = document.getElementById('pointCloud');
-        const numberOfPoints = 1400;
-        const radius = Math.min(window.innerWidth, window.innerHeight) * 0.45;
-        for (let i = 0; i < numberOfPoints; i++) {
-            const point = document.createElement('div');
-            point.classList.add('point');
-            const phi = Math.acos(-1 + (2 * i) / numberOfPoints);
-            const theta = Math.sqrt(numberOfPoints * Math.PI) * phi;
-            const x = radius * Math.cos(theta) * Math.sin(phi);
-            const y = radius * Math.sin(theta) * Math.sin(phi);
-            const z = radius * Math.cos(phi);
-            const size = Math.random() * 2.5 + 1.2;
-            point.style.width = point.style.height = `${size}px`;
-            point.style.transform = `translate3d(${x}px, ${y}px, ${z}px)`;
-            point.style.opacity = Math.random() * 0.8 + 0.4;
-            pointCloud.appendChild(point);
-        }
-
-        // Mover el chat de Chatling al contenedor correcto cuando cargue
-        window.addEventListener('load', function() {
-            setTimeout(function() {
-                const targetContainer = document.getElementById('chtl-inline-bot');
-                const chatElements = document.querySelectorAll('iframe[src*="chatling"], [id*="chtl"][id*="widget"]');
-                
-                chatElements.forEach(function(element) {
-                    if (element.id !== 'chtl-script' && element.id !== 'chtl-inline-bot') {
-                        console.log('Moviendo elemento de chat:', element);
-                        targetContainer.appendChild(element);
-                        element.style.cssText = 'width:100%!important;height:100%!important;display:block!important;position:relative!important;border:none!important;';
-                    }
-                });
-            }, 2000);
-        });
-    </script>
-
-    <!-- Scripts de Chatling - AL FINAL para que cargue después -->
-    <script>
-        window.chtlConfig = {
-            chatbotId: "7825123996"
+        // TODO: Reemplazar con tu configuración de Firebase
+        const firebaseConfig = {
+            apiKey: "TU_API_KEY",
+            authDomain: "TU_PROJECT.firebaseapp.com",
+            projectId: "TU_PROJECT_ID",
+            storageBucket: "TU_PROJECT.appspot.com",
+            messagingSenderId: "TU_SENDER_ID",
+            appId: "TU_APP_ID"
         };
-    </script>
-    <script async data-id="7825123996" id="chtl-script" type="text/javascript" src="https://chatling.ai/js/embed.js"></script>
 
-    <!-- Botones inferiores -->
-    <div class="fixed bottom-12 left-8 right-8 flex justify-between items-center z-50 pointer-events-none">
-        <button onclick="openChatWidget()" class="pointer-events-auto">
-            <span class="text-2xl tracking-widest text-primary border-b-2 border-transparent hover:border-primary pb-1 transition glitch-hover">
-                Lustig-IA
-            </span>
-        </button>
-        <button onclick="openContactoForm()" class="pointer-events-auto">
-            <span class="text-2xl tracking-widest text-primary border-b-2 border-transparent hover:border-primary pb-1 transition glitch-hover">
-                Contacto
-            </span>
-        </button>
-    </div>
+        // Inicializar Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Hacer disponible globalmente
+        window.db = db;
+        window.firestoreModules = { collection, getDocs, addDoc, updateDoc, doc, query, where };
+    </script>
+
+    <script>
+        // Verificar acceso al cargar
+        window.addEventListener('load', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const token = urlParams.get('token');
+            
+            if (!token) {
+                alert('❌ Acceso denegado');
+                window.location.href = '/';
+                return;
+            }
+            
+            try {
+                const userId = atob(token);
+                const adminUsers = ['LUSTIG2025', 'ADMIN', 'VICTOR'];
+                
+                if (!adminUsers.includes(userId.toUpperCase())) {
+                    alert('❌ Token inválido');
+                    window.location.href = '/';
+                    return;
+                }
+            } catch (e) {
+                alert('❌ Token corrupto');
+                window.location.href = '/';
+                return;
+            }
+            
+            // Esperar a que Firebase se inicialice
+            setTimeout(() => {
+                loadData();
+                getUserIP();
+            }, 1000);
+        });
+
+        function logout() {
+            if (confirm('¿Cerrar sesión?')) {
+                window.location.href = '/';
+            }
+        }
+
+        function sendWhatsApp(numero) {
+            const mensaje = encodeURIComponent('🤖 Mensaje desde Lustig-IA Admin Panel');
+            window.open(`https://wa.me/${numero}?text=${mensaje}`, '_blank');
+        }
+
+        function enviarEncuestaEquipo() {
+            const preguntas = `🤖 *ENCUESTA LUSTIG-IA*
+
+1. ¿Cuál es tu nicho principal?
+□ Retail
+□ Gimnasio / Fitness
+□ Servicios
+□ Otro
+
+2. ¿Tu objetivo actual es principalmente...?
+□ Vender más
+□ Cobrar mejor / más rápido
+□ Retener clientes
+□ Optimizar procesos internos
+
+3. ¿Cuentas con CRM para gestionar clientes?
+□ Sí
+□ No
+
+4. ¿Cuentas con ERP u otro sistema administrativo?
+□ Sí
+□ No
+
+5. ¿Usas actualmente alguna herramienta de IA o automatización?
+□ Sí
+□ No
+
+6. ¿Quieres recibir una propuesta personalizada para tu negocio?
+□ Sí
+□ No
+
+_Enviado desde Lustig-IA Admin_`;
+
+            const mensaje = encodeURIComponent(preguntas);
+            const contactos = [
+                { nombre: 'Evelin Recio', numero: '5218110667355' },
+                { nombre: 'Edgar Von', numero: '5218180967391' },
+                { nombre: 'Nancy', numero: '5218193667176' }
+            ];
+            
+            if (confirm(`¿Enviar encuesta a ${contactos.length} contactos?`)) {
+                contactos.forEach((contacto, index) => {
+                    setTimeout(() => {
+                        window.open(`https://wa.me/${contacto.numero}?text=${mensaje}`, '_blank');
+                    }, index * 2000);
+                });
+                
+                // Actualizar contador en Firebase
+                updateWhatsAppCounter(3);
+                alert('✅ Abriendo WhatsApp para cada contacto...');
+            }
+        }
+
+        async function generateLicense() {
+            const email = document.getElementById('license-email').value;
+            const name = document.getElementById('license-name').value;
+            
+            if (!email || !name) {
+                alert('❌ Completa todos los campos');
+                return;
+            }
+            
+            const licenseKey = 'LIA-' + Math.random().toString(36).substr(2, 9).toUpperCase();
+            const license = {
+                key: licenseKey,
+                email: email,
+                name: name,
+                ip: document.getElementById('current-ip').textContent,
+                createdAt: new Date().toISOString(),
+                status: 'active'
+            };
+            
+            try {
+                // Guardar en Firestore
+                const { collection, addDoc } = window.firestoreModules;
+                await addDoc(collection(window.db, 'licenses'), license);
+                
+                document.getElementById('license-email').value = '';
+                document.getElementById('license-name').value = '';
+                
+                await loadLicenses();
+                alert(`✅ Licencia generada: ${licenseKey}`);
+            } catch (error) {
+                console.error('Error al generar licencia:', error);
+                alert('❌ Error al generar licencia. Revisa la consola.');
+            }
+        }
+
+        async function loadLicenses() {
+            try {
+                const { collection, getDocs } = window.firestoreModules;
+                const querySnapshot = await getDocs(collection(window.db, 'licenses'));
+                const licenses = [];
+                
+                querySnapshot.forEach((doc) => {
+                    licenses.push({ id: doc.id, ...doc.data() });
+                });
+                
+                const container = document.getElementById('licenses-list');
+                
+                if (licenses.length === 0) {
+                    container.innerHTML = '<p class="text-textblue text-sm">No hay licencias generadas</p>';
+                    return;
+                }
+                
+                container.innerHTML = licenses.map(lic => `
+                    <div class="license-item">
+                        <div>
+                            <div class="font-bold">${lic.key}</div>
+                            <div class="text-sm text-textblue">${lic.name} - ${lic.email}</div>
+                            <div class="text-xs" style="color:#888;">IP: ${lic.ip} | ${new Date(lic.createdAt).toLocaleDateString()}</div>
+                        </div>
+                        <div>
+                            <span class="status-${lic.status}">${lic.status.toUpperCase()}</span>
+                            ${lic.status === 'active' ? `<button onclick="revokeLicense('${lic.id}')" class="btn-danger ml-2">Revocar</button>` : ''}
+                        </div>
+                    </div>
+                `).join('');
+                
+                const activeLicenses = licenses.filter(l => l.status === 'active').length;
+                document.getElementById('active-licenses').textContent = activeLicenses;
+                document.getElementById('total-licenses').textContent = 17 - activeLicenses;
+            } catch (error) {
+                console.error('Error al cargar licencias:', error);
+                document.getElementById('licenses-list').innerHTML = '<p class="text-red-500 text-sm">Error al cargar licencias</p>';
+            }
+        }
+
+        async function revokeLicense(licenseId) {
+            if (!confirm('¿Revocar esta licencia?')) return;
+            
+            try {
+                const { doc, updateDoc } = window.firestoreModules;
+                await updateDoc(doc(window.db, 'licenses', licenseId), {
+                    status: 'revoked',
+                    revokedAt: new Date().toISOString()
+                });
+                
+                await loadLicenses();
+                alert('✅ Licencia revocada');
+            } catch (error) {
+                console.error('Error al revocar licencia:', error);
+                alert('❌ Error al revocar licencia');
+            }
+        }
+
+        function getUserIP() {
+            fetch('https://api.ipify.org?format=json')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('current-ip').textContent = data.ip;
+                    saveAuthorizedIP(data.ip);
+                    loadIPs();
+                })
+                .catch(() => {
+                    document.getElementById('current-ip').textContent = 'No disponible';
+                });
+        }
+
+        async function saveAuthorizedIP(ip) {
+            try {
+                const { collection, query, where, getDocs, addDoc } = window.firestoreModules;
+                
+                // Verificar si ya existe
+                const q = query(collection(window.db, 'authorized_ips'), where('ip', '==', ip));
+                const querySnapshot = await getDocs(q);
+                
+                if (querySnapshot.empty) {
+                    await addDoc(collection(window.db, 'authorized_ips'), {
+                        ip: ip,
+                        addedAt: new Date().toISOString()
+                    });
+                }
+            } catch (error) {
+                console.error('Error al guardar IP:', error);
+            }
+        }
+
+        async function loadIPs() {
+            try {
+                const { collection, getDocs } = window.firestoreModules;
+                const querySnapshot = await getDocs(collection(window.db, 'authorized_ips'));
+                const ips = [];
+                
+                querySnapshot.forEach((doc) => {
+                    ips.push({ id: doc.id, ...doc.data() });
+                });
+                
+                const container = document.getElementById('ip-list');
+                
+                if (ips.length === 0) {
+                    container.innerHTML = '<p class="text-textblue text-sm">No hay IPs registradas</p>';
+                    return;
+                }
+                
+                container.innerHTML = '<h3 class="text-textblue mb-2 text-lg">IPs Autorizadas</h3>' + 
+                    ips.map(ipData => `
+                        <div class="license-item">
+                            <div>
+                                <span class="font-bold">${ipData.ip}</span>
+                                <span class="text-xs text-textblue ml-2">${new Date(ipData.addedAt).toLocaleDateString()}</span>
+                            </div>
+                            <button onclick="removeIP('${ipData.id}')" class="btn-danger">Eliminar</button>
+                        </div>
+                    `).join('');
+            } catch (error) {
+                console.error('Error al cargar IPs:', error);
+            }
+        }
+
+        async function removeIP(ipId) {
+            if (!confirm('¿Eliminar esta IP?')) return;
+            
+            try {
+                const { doc, updateDoc } = window.firestoreModules;
+                await updateDoc(doc(window.db, 'authorized_ips', ipId), {
+                    status: 'removed',
+                    removedAt: new Date().toISOString()
+                });
+                
+                await loadIPs();
+            } catch (error) {
+                console.error('Error al eliminar IP:', error);
+            }
+        }
+
+        async function updateWhatsAppCounter(count) {
+            try {
+                const { collection, getDocs, addDoc, updateDoc, doc } = window.firestoreModules;
+                const statsRef = collection(window.db, 'stats');
+                const querySnapshot = await getDocs(statsRef);
+                
+                if (querySnapshot.empty) {
+                    await addDoc(statsRef, { whatsapp_sent: count });
+                } else {
+                    const docData = querySnapshot.docs[0];
+                    const currentCount = docData.data().whatsapp_sent || 0;
+                    await updateDoc(doc(window.db, 'stats', docData.id), {
+                        whatsapp_sent: currentCount + count
+                    });
+                }
+                
+                document.getElementById('whatsapp-sent').textContent = 
+                    parseInt(document.getElementById('whatsapp-sent').textContent) + count;
+            } catch (error) {
+                console.error('Error al actualizar contador:', error);
+            }
+        }
+
+        async function loadData() {
+            await loadLicenses();
+            
+            try {
+                const { collection, getDocs } = window.firestoreModules;
+                const statsSnapshot = await getDocs(collection(window.db, 'stats'));
+                
+                if (!statsSnapshot.empty) {
+                    const stats = statsSnapshot.docs[0].data();
+                    document.getElementById('whatsapp-sent').textContent = stats.whatsapp_sent || 0;
+                }
+            } catch (error) {
+                console.error('Error al cargar estadísticas:', error);
+            }
+        }
+    </script>
 </body>
 </html>
