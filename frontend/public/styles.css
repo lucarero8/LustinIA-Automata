@@ -1,21 +1,105 @@
-/* Futuristic gradient background + neutral text */
+/* ===============================
+   MASTER RESPONSIVE FIX – LUSTIG IA
+   =============================== */
+
+/* Reset básico */
+* { box-sizing: border-box; }
 
 body {
   margin: 0;
   padding: 0;
-  font-family: system-ui, sans-serif;
-  background: linear-gradient(135deg, #0f0f1a, #1a1a2e, #16213e);
-  background-size: 400% 400%;
-  animation: gradientShift 15s ease infinite;
-  color: #e0e0e0;
+  overflow-x: hidden;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  background: #000;
+  color: #00ff88;
   text-align: center;
 }
 
-@keyframes gradientShift {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+/* HERO / TEXTO PRINCIPAL */
+.hero-text, .hero h1, .hero-title {
+  font-size: clamp(2rem, 6vw, 5rem);
+  letter-spacing: clamp(2px, 1vw, 14px);
+  line-height: 1.2;
+  word-break: break-word;
+  margin: 0 auto;
+  padding: 0 1rem;
 }
 
-/* Mantén tus reglas de hero, sphere, etc. debajo */
+.hero-subtitle, .hero p {
+  font-size: clamp(1rem, 3.5vw, 1.5rem);
+  letter-spacing: 1px;
+  max-width: 90%;
+  margin: 1rem auto;
+}
 
+/* ESFERA / CÍRCULO CENTRAL */
+.sphere, .circle, .hero-sphere {
+  width: min(95vw, 800px);   /* esfera más grande */
+  height: min(95vw, 800px);  /* esfera más grande */
+  margin: 3rem auto;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: rotateSphere 20s linear infinite;
+  box-shadow: 0 0 40px rgba(0,255,136,0.6), 0 0 80px rgba(0,255,136,0.3);
+}
+
+.sphere canvas {
+  width: 100% !important;
+  height: 100% !important;
+  margin: 0 auto;
+}
+
+/* Animación de rotación */
+@keyframes rotateSphere {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* LAYOUT GENERAL */
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+section, header, footer {
+  width: 100%;
+  overflow-x: hidden;
+}
+
+/* BOTONES / CTA */
+button, a.button, .cta, .whatsapp-btn {
+  min-height: 44px;
+  padding: 0.8rem 1.2rem;
+  font-size: 1rem;
+  border-radius: 999px;
+  text-align: center;
+  touch-action: manipulation;
+}
+
+.whatsapp-btn {
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+  z-index: 999;
+}
+
+/* NAV / HEADER */
+nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+}
+
+/* MOBILE OVERRIDES */
+@media (max-width: 768px) {
+  body { font-size: 16px; }
+  header { padding: 1rem 0; }
+  nav { flex-direction: column; }
+  .hero-text { margin-top: 1rem; }
+  .sphere { margin-top: 1.5rem; margin-bottom: 1.5rem; }
+}
