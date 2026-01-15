@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Encuesta LUSTIG-IA</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Inter:wght@300;400;600&display=swap" rel="stylesheet"/>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#00ff41",
+                        dark: "#0a0a0a",
+                    },
+                    fontFamily: {
+                        mono: ["'Share Tech Mono'", "monospace"],
+                        sans: ["'Inter'", "sans-serif"],
+                    }
+                }
+            }
+        };
+    </script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+            min-height: 100vh;
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .option-btn {
+            transition: all 0.3s ease;
+        }
+        .option-btn:hover {
+            transform: translateX(10px);
+            box-shadow: 0 0 20px rgba(0,255,65,0.4);
+        }
+        .progress-bar {
+            transition: width 0.5s ease;
+        }
+    </style>
+</head>
+<body class="font-sans text-white p-4">
+    
+    <div class="max-w-2xl mx-auto mt-8">
+        <!-- Header -->
+        <div class="text-center mb-8 fade-in">
+            <div class="inline-flex items-center gap-3 mb-4">
+                <div class="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center border border-primary/50 shadow-[0_0_15px_rgba(0,255,65,0.6)]">
+                    <span class="text-xl font-bold text-primary font-mono">LIA</span>
+                </div>
+            </div>
+            <h1 class="text-3xl font-bold text-primary font-mono tracking-wider mb-2">ENCUESTA LUSTIG-IA</h1>
+            <p class="text-white/70 text-sm">Ayúdanos a entender mejor tu negocio</p>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="mb-8 bg-white/10 rounded-full h-2 overflow-hidden">
+            <div id="progressBar" class="progress-bar h-full bg-primary" style="width: 0%"></div>
+        </div>
+
+        <!-- Question Container -->
+        <div id="questionContainer" class="bg-white/5 backdrop-blur-lg rounded-lg p-8 border border-primary/30 shadow-[0_0_30px_rgba(0,255,65,0.1)] fade-in">
+            <div id="questionContent"></div>
+        </div>
+
+        <!-- Results Container (hidden initially) -->
+        <div id="resultsContainer" class="hidden bg-white/5 backdrop-blur-lg rounded-lg p-8 border border-primary/30 shadow-[0_0_30px_rgba(0,255,65,0.1)]">
+            <h2 class="text-2xl font-bold text-primary mb-4 text-center font-mono">¡GRACIAS! 🎉</h2>
+            <p class="text-white/80 text-center mb-6">Tus respuestas han sido registradas</p>
+            <div id="summaryContent" class="bg-black/30 rounded p-4 mb-6 text-sm"></div>
+            <div class="text-center">
+                <button onclick="copyResults()" class="bg-primary text-black px-6 py-3 rounded font-semibold hover:shadow-[0_0_20px_rgba(0,255,65,0.6)] transition">
+                    📋 Copiar Resultados
+                </button>
+                <button onclick="sendWhatsApp()" class="bg-green-600 text-white px-6 py-3 rounded font-semibold hover:bg-green-700 transition ml-2">
+                    📱 Enviar por WhatsApp
+                </button>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="text-center mt-8 text-white/50 text-xs font-mono">
+            Enviado desde Lustig-IA Admin
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                id: 1,
+                text: "¿Cuál es tu nicho principal?",
+                options: ["Retail", "Gimnasio / Fitness", "Servicios", "Otro"]
+            },
+            {
+                id: 2,
+                text: "¿Tu objetivo actual es principalmente...?",
+                options: ["Vender más", "Cobrar mejor / más rápido", "Retener clientes", "Optimizar procesos internos"]
+            },
+            {
+                id: 3,
+                text: "¿Cuentas con CRM para gestionar clientes?",
+                options: ["Sí", "No"]
+            },
+            {
+                id: 4,
+                text: "¿Cuentas con ERP u otro sistema administrativo?",
+                options: ["Sí", "No"]
+            },
+            {
+                id: 5,
+                text: "¿Usas actualmente alguna herramienta de IA o automatización?",
+                options: ["Sí", "No"]
+            },
+            {
+                id: 6,
+                text: "¿Quieres recibir una propuesta personalizada para tu negocio?",
+                options: ["Sí", "No"]
+            }
+        ];
+
+        let currentQuestion = 0;
+        let answers = {};
+
+        function showQuestion(index) {
+            const question = questions[index];
+            const progress = ((index + 1) / questions.length) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+
+            const content = `
+                <div class="fade-in">
+                    <p class="text-white/60 text-sm mb-2 font-mono">Pregunta ${index + 1} de ${questions.length}</p>
+                    <h2 class="text-2xl font-semibold mb-6 text-white">${question.text}</h2>
+                    <div class="space-y-3">
+                        ${question.options.map((option, i) => `
+                            <button onclick="selectAnswer(${index}, '${option}')" 
+                                    class="option-btn w-full text-left p-4 rounded-lg bg-white/5 border border-primary/30 hover:bg-primary/10 hover:border-primary transition">
+                                <span class="text-primary font-mono mr-3">□</span>
+                                <span class="text-white">${option}</span>
+                            </button>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('questionContent').innerHTML = content;
+        }
+
+        function selectAnswer(questionIndex, answer) {
+            const question = questions[questionIndex];
+            answers[question.text] = answer;
+
+            if (questionIndex < questions.length - 1) {
+                currentQuestion++;
+                setTimeout(() => showQuestion(currentQuestion), 300);
+            } else {
+                showResults();
+            }
+        }
+
+        function showResults() {
+            document.getElementById('progressBar').style.width = '100%';
+            document.getElementById('questionContainer').classList.add('hidden');
+            document.getElementById('resultsContainer').classList.remove('hidden');
+
+            let summary = '<div class="space-y-2 text-white/80">';
+            Object.keys(answers).forEach((question, index) => {
+                summary += `
+                    <div class="border-b border-white/10 pb-2 mb-2">
+                        <p class="text-xs text-primary font-mono mb-1">${index + 1}. ${question}</p>
+                        <p class="text-sm font-semibold">→ ${answers[question]}</p>
+                    </div>
+                `;
+            });
+            summary += '</div>';
+            
+            document.getElementById('summaryContent').innerHTML = summary;
+
+            // Guardar en localStorage para posible integración futura
+            localStorage.setItem('lustinia_survey_' + Date.now(), JSON.stringify({
+                timestamp: new Date().toISOString(),
+                answers: answers
+            }));
+
+            console.log('Respuestas guardadas:', answers);
+        }
+
+        function copyResults() {
+            let text = '📊 *ENCUESTA LUSTIG-IA*\n\n';
+            Object.keys(answers).forEach((question, index) => {
+                text += `${index + 1}. ${question}\n✓ ${answers[question]}\n\n`;
+            });
+            text += '_Enviado desde Lustig-IA Admin_';
+
+            navigator.clipboard.writeText(text).then(() => {
+                alert('✅ Resultados copiados al portapapeles');
+            });
+        }
+
+        function sendWhatsApp() {
+            let text = '📊 *ENCUESTA LUSTIG-IA*%0A%0A';
+            Object.keys(answers).forEach((question, index) => {
+                text += `${index + 1}. ${question}%0A✓ ${answers[question]}%0A%0A`;
+            });
+            text += '_Enviado desde Lustig-IA Admin_';
+
+            // Cambia este número por el tuyo
+            const whatsappNumber = '528130929276';
+            window.open(`https://wa.me/${whatsappNumber}?text=${text}`, '_blank');
+        }
+
+        // Iniciar encuesta
+        showQuestion(0);
+    </script>
+</body>
+</html>

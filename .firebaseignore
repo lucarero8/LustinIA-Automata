@@ -1,0 +1,23 @@
+# Backup folders
+**/publicxxxxxx/
+**/publicXXXXXX/
+**/*_backup_*/
+.backups/
+*.backup
+
+# Development
+**/.*
+**/node_modules/**
+**/__pycache__/
+**/*.pyc
+**/*.log
+**/.DS_Store
+
+# Build artifacts
+**/dist/
+**/build/
+**/.cache/
+
+# IDE
+**/.vscode/
+**/.idea/

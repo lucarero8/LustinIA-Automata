@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Lustig-IA Admin Panel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet"/>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#00ff41",
+                        textblue: "#00bfff",
+                    },
+                    fontFamily: {
+                        display: ["'Share Tech Mono'", "monospace"],
+                    }
+                }
+            }
+        };
+    </script>
+    <style>
+        body { 
+            margin:0; 
+            background:#000; 
+            min-height:100vh; 
+            font-family:'Share Tech Mono', monospace;
+            color:#00ff41;
+        }
+        .admin-card {
+            background:rgba(0,0,0,0.95);
+            border:2px solid #00ff41;
+            border-radius:8px;
+            padding:24px;
+            margin:16px 0;
+            box-shadow:0 0 30px rgba(0,255,65,0.3);
+        }
+        .btn-primary {
+            background:#00ff41;
+            color:#000;
+            border:none;
+            padding:10px 20px;
+            border-radius:6px;
+            cursor:pointer;
+            font-weight:bold;
+            transition:all 0.3s;
+        }
+        .btn-primary:hover {
+            box-shadow:0 0 20px rgba(0,255,65,0.8);
+            transform:scale(1.05);
+        }
+        .btn-danger {
+            background:#ff4444;
+            color:#fff;
+            border:none;
+            padding:8px 16px;
+            border-radius:4px;
+            cursor:pointer;
+            font-size:12px;
+        }
+        .license-item {
+            background:rgba(0,255,65,0.05);
+            border:1px solid rgba(0,255,65,0.3);
+            padding:12px;
+            margin:8px 0;
+            border-radius:4px;
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+        }
+        .status-active { color:#00ff41; }
+        .status-expired { color:#ff4444; }
+        .status-revoked { color:#ff4444; }
+        table {
+            width:100%;
+            border-collapse:collapse;
+        }
+        th, td {
+            padding:12px;
+            text-align:left;
+            border-bottom:1px solid rgba(0,255,65,0.2);
+        }
+        th {
+            color:#00bfff;
+            font-weight:bold;
+        }
+        input, textarea {
+            width:100%;
+            padding:10px;
+            background:rgba(0,255,65,0.05);
+            border:1px solid #00ff41;
+            color:#fff;
+            border-radius:4px;
+            margin:8px 0;
+            font-family:'Share Tech Mono', monospace;
+        }
+        input:focus, textarea:focus {
+            outline:none;
+            box-shadow:0 0 10px rgba(0,255,65,0.5);
+        }
+    </style>
+</head>
+<body class="p-8">
+    
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-8">
+        <div>
+            <h1 class="text-4xl font-bold text-primary mb-2">🔐 ADMIN PANEL</h1>
+            <p class="text-textblue">Lustig-IA Management System</p>
+        </div>
+        <button onclick="logout()" class="btn-danger">Cerrar Sesión</button>
+    </div>
+
+    <!-- Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+        <div class="admin-card text-center">
+            <div class="text-3xl font-bold text-primary" id="total-licenses">17</div>
+            <div class="text-sm text-textblue">Licencias Disponibles</div>
+        </div>
+        <div class="admin-card text-center">
+            <div class="text-3xl font-bold text-textblue" id="active-licenses">0</div>
+            <div class="text-sm text-textblue">Licencias Activas</div>
+        </div>
+        <div class="admin-card text-center">
+            <div class="text-3xl font-bold" style="color:#25D366;" id="whatsapp-sent">0</div>
+            <div class="text-sm text-textblue">Encuestas Enviadas</div>
+        </div>
+        <div class="admin-card text-center">
+            <div class="text-3xl font-bold" style="color:#ff9800;" id="stripe-sales">$0</div>
+            <div class="text-sm text-textblue">Ventas Stripe</div>
+        </div>
+    </div>
+
+    <!-- Team Contacts -->
+    <div class="admin-card mb-8">
+        <h2 class="text-2xl font-bold text-primary mb-4">📞 Equipo de Trabajo</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>WhatsApp</th>
+                    <th>Rol</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Evelin Recio</td>
+                    <td>+52 1 81 1066 7355</td>
+                    <td class="text-textblue">Ventas</td>
+                    <td>
+                        <button onclick="sendWhatsApp('5218110667355')" class="btn-primary text-xs py-1 px-3">Enviar</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Edgar Von</td>
+                    <td>+52 1 81 8096 7391</td>
+                    <td class="text-textblue">Ventas</td>
+                    <td>
+                        <button onclick="sendWhatsApp('5218180967391')" class="btn-primary text-xs py-1 px-3">Enviar</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Nancy</td>
+                    <td>+52 1 81 9366 7176</td>
+                    <td class="text-textblue">Soporte</td>
+                    <td>
+                        <button onclick="sendWhatsApp('5218193667176')" class="btn-primary text-xs py-1 px-3">Enviar</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="mt-4">
+            <button onclick="enviarEncuestaEquipo()" class="btn-primary w-full">
+                📊 ENVIAR ENCUESTA A TODO EL EQUIPO
+            </button>
+        </div>
+    </div>
+
+    <!-- License Management -->
+    <div class="admin-card mb-8">
+        <h2 class="text-2xl font-bold text-primary mb-4">🎫 Gestión de Licencias</h2>
+        
+        <div class="mb-4">
+            <h3 class="text-lg text-textblue mb-2">Generar Nueva Licencia</h3>
+            <input type="text" id="license-email" placeholder="Email del cliente" />
+            <input type="text" id="license-name" placeholder="Nombre del cliente" />
+            <button onclick="generateLicense()" class="btn-primary mt-2">Generar Licencia</button>
+        </div>
+
+        <h3 class="text-lg text-textblue mb-2 mt-6">Licencias Activas</h3>
+        <div id="licenses-list">
+            <p class="text-textblue text-sm">Cargando licencias...</p>
+        </div>
+    </div>
+
+    <!-- IP Tracking -->
+    <div class="admin-card">
+        <h2 class="text-2xl font-bold text-primary mb-4">🌐 Control de IPs</h2>
+        <p class="text-sm text-textblue mb-4">Tu IP actual: <span id="current-ip" class="text-primary">Cargando...</span></p>
+        
+        <div id="ip-list">
+            <p class="text-textblue text-sm">Cargando IPs...</p>
+        </div>
+    </div>
+
+    <!-- Firebase Config -->
+    <script type="module">
+        // Importar Firebase
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getFirestore, collection, getDocs, addDoc, updateDoc, doc, query, where } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+        // TODO: Reemplazar con tu configuración de Firebase
+        const firebaseConfig = {
+            apiKey: "TU_API_KEY",
+            authDomain: "TU_PROJECT.firebaseapp.com",
+            projectId: "TU_PROJECT_ID",
+            storageBucket: "TU_PROJECT.appspot.com",
+            messagingSenderId: "TU_SENDER_ID",
+            appId: "TU_APP_ID"
+        };
+
+        // Inicializar Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Hacer disponible globalmente
+        window.db = db;
+        window.firestoreModules = { collection, getDocs, addDoc, updateDoc, doc, query, where };
+    </script>
+
+    <script>
+        // Verificar acceso al cargar
+        window.addEventListener('load', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const token = urlParams.get('token');
+            
+            if (!token) {
+                alert('❌ Acceso denegado');
+                window.location.href = '/';
+                return;
+            }
+            
+            try {
+                const userId = atob(token);
+                const adminUsers = ['LUSTIG2025', 'ADMIN', 'VICTOR'];
+                
+                if (!adminUsers.includes(userId.toUpperCase())) {
+                    alert('❌ Token inválido');
+                    window.location.href = '/';
+                    return;
+                }
+            } catch (e) {
+                alert('❌ Token corrupto');
+                window.location.href = '/';
+                return;
+            }
+            
+            // Esperar a que Firebase se inicialice
+            setTimeout(() => {
+                loadData();
+                getUserIP();
+            }, 1000);
+        });
+
+        function logout() {
+            if (confirm('¿Cerrar sesión?')) {
+                window.location.href = '/';
+            }
+        }
+
+        function sendWhatsApp(numero) {
+            const mensaje = encodeURIComponent('🤖 Mensaje desde Lustig-IA Admin Panel');
+            window.open(`https://wa.me/${numero}?text=${mensaje}`, '_blank');
+        }
+
+        function enviarEncuestaEquipo() {
+            const preguntas = `🤖 *ENCUESTA LUSTIG-IA*
+
+1. ¿Cuál es tu nicho principal?
+□ Retail
+□ Gimnasio / Fitness
+□ Servicios
+□ Otro
+
+2. ¿Tu objetivo actual es principalmente...?
+□ Vender más
+□ Cobrar mejor / más rápido
+□ Retener clientes
+□ Optimizar procesos internos
+
+3. ¿Cuentas con CRM para gestionar clientes?
+□ Sí
+□ No
+
+4. ¿Cuentas con ERP u otro sistema administrativo?
+□ Sí
+□ No
+
+5. ¿Usas actualmente alguna herramienta de IA o automatización?
+□ Sí
+□ No
+
+6. ¿Quieres recibir una propuesta personalizada para tu negocio?
+□ Sí
+□ No
+
+_Enviado desde Lustig-IA Admin_`;
+
+            const mensaje = encodeURIComponent(preguntas);
+            const contactos = [
+                { nombre: 'Evelin Recio', numero: '5218110667355' },
+                { nombre: 'Edgar Von', numero: '5218180967391' },
+                { nombre: 'Nancy', numero: '5218193667176' }
+            ];
+            
+            if (confirm(`¿Enviar encuesta a ${contactos.length} contactos?`)) {
+                contactos.forEach((contacto, index) => {
+                    setTimeout(() => {
+                        window.open(`https://wa.me/${contacto.numero}?text=${mensaje}`, '_blank');
+                    }, index * 2000);
+                });
+                
+                // Actualizar contador en Firebase
+                updateWhatsAppCounter(3);
+                alert('✅ Abriendo WhatsApp para cada contacto...');
+            }
+        }
+
+        async function generateLicense() {
+            const email = document.getElementById('license-email').value;
+            const name = document.getElementById('license-name').value;
+            
+            if (!email || !name) {
+                alert('❌ Completa todos los campos');
+                return;
+            }
+            
+            const licenseKey = 'LIA-' + Math.random().toString(36).substr(2, 9).toUpperCase();
+            const license = {
+                key: licenseKey,
+                email: email,
+                name: name,
+                ip: document.getElementById('current-ip').textContent,
+                createdAt: new Date().toISOString(),
+                status: 'active'
+            };
+            
+            try {
+                // Guardar en Firestore
+                const { collection, addDoc } = window.firestoreModules;
+                await addDoc(collection(window.db, 'licenses'), license);
+                
+                document.getElementById('license-email').value = '';
+                document.getElementById('license-name').value = '';
+                
+                await loadLicenses();
+                alert(`✅ Licencia generada: ${licenseKey}`);
+            } catch (error) {
+                console.error('Error al generar licencia:', error);
+                alert('❌ Error al generar licencia. Revisa la consola.');
+            }
+        }
+
+        async function loadLicenses() {
+            try {
+                const { collection, getDocs } = window.firestoreModules;
+                const querySnapshot = await getDocs(collection(window.db, 'licenses'));
+                const licenses = [];
+                
+                querySnapshot.forEach((doc) => {
+                    licenses.push({ id: doc.id, ...doc.data() });
+                });
+                
+                const container = document.getElementById('licenses-list');
+                
+                if (licenses.length === 0) {
+                    container.innerHTML = '<p class="text-textblue text-sm">No hay licencias generadas</p>';
+                    return;
+                }
+                
+                container.innerHTML = licenses.map(lic => `
+                    <div class="license-item">
+                        <div>
+                            <div class="font-bold">${lic.key}</div>
+                            <div class="text-sm text-textblue">${lic.name} - ${lic.email}</div>
+                            <div class="text-xs" style="color:#888;">IP: ${lic.ip} | ${new Date(lic.createdAt).toLocaleDateString()}</div>
+                        </div>
+                        <div>
+                            <span class="status-${lic.status}">${lic.status.toUpperCase()}</span>
+                            ${lic.status === 'active' ? `<button onclick="revokeLicense('${lic.id}')" class="btn-danger ml-2">Revocar</button>` : ''}
+                        </div>
+                    </div>
+                `).join('');
+                
+                const activeLicenses = licenses.filter(l => l.status === 'active').length;
+                document.getElementById('active-licenses').textContent = activeLicenses;
+                document.getElementById('total-licenses').textContent = 17 - activeLicenses;
+            } catch (error) {
+                console.error('Error al cargar licencias:', error);
+                document.getElementById('licenses-list').innerHTML = '<p class="text-red-500 text-sm">Error al cargar licencias</p>';
+            }
+        }
+
+        async function revokeLicense(licenseId) {
+            if (!confirm('¿Revocar esta licencia?')) return;
+            
+            try {
+                const { doc, updateDoc } = window.firestoreModules;
+                await updateDoc(doc(window.db, 'licenses', licenseId), {
+                    status: 'revoked',
+                    revokedAt: new Date().toISOString()
+                });
+                
+                await loadLicenses();
+                alert('✅ Licencia revocada');
+            } catch (error) {
+                console.error('Error al revocar licencia:', error);
+                alert('❌ Error al revocar licencia');
+            }
+        }
+
+        function getUserIP() {
+            fetch('https://api.ipify.org?format=json')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('current-ip').textContent = data.ip;
+                    saveAuthorizedIP(data.ip);
+                    loadIPs();
+                })
+                .catch(() => {
+                    document.getElementById('current-ip').textContent = 'No disponible';
+                });
+        }
+
+        async function saveAuthorizedIP(ip) {
+            try {
+                const { collection, query, where, getDocs, addDoc } = window.firestoreModules;
+                
+                // Verificar si ya existe
+                const q = query(collection(window.db, 'authorized_ips'), where('ip', '==', ip));
+                const querySnapshot = await getDocs(q);
+                
+                if (querySnapshot.empty) {
+                    await addDoc(collection(window.db, 'authorized_ips'), {
+                        ip: ip,
+                        addedAt: new Date().toISOString()
+                    });
+                }
+            } catch (error) {
+                console.error('Error al guardar IP:', error);
+            }
+        }
+
+        async function loadIPs() {
+            try {
+                const { collection, getDocs } = window.firestoreModules;
+                const querySnapshot = await getDocs(collection(window.db, 'authorized_ips'));
+                const ips = [];
+                
+                querySnapshot.forEach((doc) => {
+                    ips.push({ id: doc.id, ...doc.data() });
+                });
+                
+                const container = document.getElementById('ip-list');
+                
+                if (ips.length === 0) {
+                    container.innerHTML = '<p class="text-textblue text-sm">No hay IPs registradas</p>';
+                    return;
+                }
+                
+                container.innerHTML = '<h3 class="text-textblue mb-2 text-lg">IPs Autorizadas</h3>' + 
+                    ips.map(ipData => `
+                        <div class="license-item">
+                            <div>
+                                <span class="font-bold">${ipData.ip}</span>
+                                <span class="text-xs text-textblue ml-2">${new Date(ipData.addedAt).toLocaleDateString()}</span>
+                            </div>
+                            <button onclick="removeIP('${ipData.id}')" class="btn-danger">Eliminar</button>
+                        </div>
+                    `).join('');
+            } catch (error) {
+                console.error('Error al cargar IPs:', error);
+            }
+        }
+
+        async function removeIP(ipId) {
+            if (!confirm('¿Eliminar esta IP?')) return;
+            
+            try {
+                const { doc, updateDoc } = window.firestoreModules;
+                await updateDoc(doc(window.db, 'authorized_ips', ipId), {
+                    status: 'removed',
+                    removedAt: new Date().toISOString()
+                });
+                
+                await loadIPs();
+            } catch (error) {
+                console.error('Error al eliminar IP:', error);
+            }
+        }
+
+        async function updateWhatsAppCounter(count) {
+            try {
+                const { collection, getDocs, addDoc, updateDoc, doc } = window.firestoreModules;
+                const statsRef = collection(window.db, 'stats');
+                const querySnapshot = await getDocs(statsRef);
+                
+                if (querySnapshot.empty) {
+                    await addDoc(statsRef, { whatsapp_sent: count });
+                } else {
+                    const docData = querySnapshot.docs[0];
+                    const currentCount = docData.data().whatsapp_sent || 0;
+                    await updateDoc(doc(window.db, 'stats', docData.id), {
+                        whatsapp_sent: currentCount + count
+                    });
+                }
+                
+                document.getElementById('whatsapp-sent').textContent = 
+                    parseInt(document.getElementById('whatsapp-sent').textContent) + count;
+            } catch (error) {
+                console.error('Error al actualizar contador:', error);
+            }
+        }
+
+        async function loadData() {
+            await loadLicenses();
+            
+            try {
+                const { collection, getDocs } = window.firestoreModules;
+                const statsSnapshot = await getDocs(collection(window.db, 'stats'));
+                
+                if (!statsSnapshot.empty) {
+                    const stats = statsSnapshot.docs[0].data();
+                    document.getElementById('whatsapp-sent').textContent = stats.whatsapp_sent || 0;
+                }
+            } catch (error) {
+                console.error('Error al cargar estadísticas:', error);
+            }
+        }
+    </script>
+</body>
+</html>
